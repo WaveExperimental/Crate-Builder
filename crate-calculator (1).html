@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CrateBuilder Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;700&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #111010;
+  --surface: #1c1b19;
+  --surface2: #252320;
+  --border: #2e2c27;
+  --accent: #d4821a;
+  --accent-dim: #8a5210;
+  --wood: #7a4f28;
+  --wood-light: #c4864a;
+  --ply-color: #c8a96e;
+  --text: #ede8de;
+  --text-dim: #7a7060;
+  --text-mid: #a09880;
+  --green: #4a9e6a;
+  --red: #b04030;
+  --blue: #3a7ab0;
+  --seam-color: #3a6a9e;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* HEADER */
+header {
+  background: var(--surface);
+  border-bottom: 2px solid var(--accent-dim);
+  padding: 0 28px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.logo { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 3px; color: var(--accent); }
+.logo em { color: var(--text-dim); font-style: normal; }
+.header-dims {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; color: var(--text-mid);
+  background: var(--surface2);
+  padding: 4px 14px; border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.header-dims span { color: var(--accent); font-weight: 700; }
+
+/* LAYOUT */
+.app {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* SIDEBAR */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.sec-head {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 11px; letter-spacing: 4px;
+  color: var(--accent); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.sec-head::after { content:''; flex:1; height:1px; background: var(--border); }
+
+.dim-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.dim-wrap { display: flex; flex-direction: column; gap: 3px; }
+.dim-wrap label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); text-align: center; }
+input[type=number] {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; font-weight: 700;
+  padding: 8px 4px;
+  width: 100%;
+  text-align: center;
+  transition: border-color 0.15s;
+  -moz-appearance: textfield;
+}
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+input[type=number]:focus { outline: none; border-color: var(--accent); }
+input[type=number].warn { border-color: #8a7020; }
+input[type=number].error { border-color: var(--red); }
+.unit-note { text-align: center; font-size: 9px; color: var(--text-dim); letter-spacing: 1px; }
+
+.cost-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cost-item { display: flex; flex-direction: column; gap: 4px; }
+.cost-item label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); }
+.cost-item .inp-wrap { position: relative; }
+.cost-item .inp-wrap input { font-size: 14px; padding: 7px 22px 7px 8px; text-align: left; }
+.cost-item .inp-wrap .sym {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  font-size: 11px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;
+  pointer-events: none;
+}
+
+.results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.res-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.res-card .rl { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 3px; }
+.res-card .rv {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 20px; font-weight: 700; color: var(--text);
+  line-height: 1;
+}
+.res-card .rv small { font-size: 11px; color: var(--text-dim); font-weight: 400; }
+.res-card.sale { border-color: var(--accent); background: #1a140a; grid-column: span 2; }
+.res-card.sale .rv { font-size: 26px; color: var(--accent); }
+.res-card.sale .rl { color: var(--accent-dim); }
+
+.warn-box {
+  background: #1a1408; border: 1px solid #5a4010;
+  border-radius: 5px; padding: 8px 12px;
+  font-size: 11px; color: #c09040;
+  display: none;
+}
+
+/* MAIN */
+.main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* TABS */
+.tabs {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  display: flex;
+  gap: 0;
+  flex-shrink: 0;
+}
+.tab-btn {
+  background: none; border: none;
+  color: var(--text-dim);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px; letter-spacing: 2px;
+  padding: 14px 18px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--text-mid); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.tab-panels { flex: 1; overflow-y: auto; padding: 20px; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ASSEMBLY CANVAS */
+.canvas-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+}
+.canvas-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 12px; letter-spacing: 4px; color: var(--text-dim);
+  margin-bottom: 16px;
+}
+#assembly-canvas { max-width: 100%; }
+
+.legend {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 8px;
+  margin-top: 16px;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 5px; padding: 8px 12px;
+}
+.legend-swatch { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+.legend-text { font-size: 11px; color: var(--text-mid); }
+.legend-text strong { display: block; font-size: 12px; color: var(--text); font-weight: 600; }
+
+/* CUT LIST */
+.cut-section { margin-bottom: 24px; }
+.cut-sec-head {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px; letter-spacing: 3px; color: var(--accent);
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.cut-sec-head::after { content:''; flex:1; height:1px; background: var(--border); }
+
+.board-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 12px 14px;
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.board-meta { min-width: 100px; }
+.board-meta .bnum { font-size: 10px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; }
+.board-meta .bwaste { font-size: 11px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+.board-bar {
+  flex: 1; height: 34px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  position: relative;
+}
+.seg {
+  height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700;
+  color: rgba(0,0,0,0.75);
+  border-right: 1px solid rgba(0,0,0,0.25);
+  position: relative; overflow: hidden;
+  transition: filter 0.15s;
+  cursor: default;
+}
+.seg:hover { filter: brightness(1.15); }
+.seg-label { position: relative; z-index: 1; padding: 0 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.seg-waste {
+  flex: 1;
+  background: repeating-linear-gradient(45deg,#1a1916,#1a1916 3px,#141311 3px,#141311 6px);
+  border-left: 1px dashed var(--border);
+  display: flex; align-items: center; justify-content: center;
+}
+.seg-waste span { font-size: 9px; color: var(--text-dim); }
+
+/* PLYWOOD SHEETS */
+.ply-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+.ply-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 12px;
+}
+.ply-card-head {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 2px;
+  color: var(--text-dim); margin-bottom: 10px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.ply-sheet-svg { width: 100%; }
+
+/* MATERIALS TABLE */
+.mat-table { width: 100%; border-collapse: collapse; }
+.mat-table th {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 2px;
+  color: var(--text-dim); font-weight: 500; padding: 8px 14px;
+  border-bottom: 1px solid var(--border); text-align: left;
+  font-family: 'Barlow', sans-serif;
+}
+.mat-table td {
+  padding: 11px 14px; border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.mat-table tr:last-child td { border-bottom: none; }
+.mat-table .total-row td { color: var(--accent); background: #1a1408; font-weight: 700; font-size: 14px; }
+.mat-table .sale-row td { color: #e8c040; background: #1a1808; font-weight: 700; font-size: 15px; }
+.chip {
+  display: inline-block; padding: 1px 7px; border-radius: 3px;
+  font-size: 9px; letter-spacing: 1px; text-transform: uppercase; font-weight: 500;
+  font-family: 'Barlow', sans-serif;
+}
+.chip-w { background:#2a1e0e; color: var(--wood-light); }
+.chip-p { background:#201a08; color: var(--ply-color); }
+.chip-l { background:#081820; color: #4a90c0; }
+.chip-s { background:#181820; color: #8080c0; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Crate<em>Builder</em> Pro</div>
+  <div class="header-dims" id="header-dims">— × — × —&nbsp;&nbsp;in</div>
+</header>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <div>
+      <div class="sec-head">Crate Dimensions</div>
+      <div class="dim-inputs">
+        <div class="dim-wrap">
+          <label>Length</label>
+          <input type="number" id="iL" value="48" min="6" max="96" step="1" oninput="recalc()">
+        </div>
+        <div class="dim-wrap">
+          <label>Width</label>
+          <input type="number" id="iW" value="48" min="6" max="96" step="1" oninput="recalc()">
+        </div>
+        <div class="dim-wrap">
+          <label>Height</label>
+          <input type="number" id="iH" value="48" min="6" max="96" step="1" oninput="recalc()">
+        </div>
+      </div>
+      <div class="unit-note" style="margin-top:6px">inches &nbsp;|&nbsp; max 96" per dimension</div>
+      <div class="warn-box" id="warn-box" style="margin-top:8px"></div>
+    </div>
+
+    <div>
+      <div class="sec-head">Material Costs</div>
+      <div class="cost-grid">
+        <div class="cost-item">
+          <label>2×4 / 8ft board</label>
+          <div class="inp-wrap"><input type="number" id="cLumber" value="4" min="0" step="0.5" oninput="recalc()"><span class="sym">$</span></div>
+        </div>
+        <div class="cost-item">
+          <label>Plywood / sheet</label>
+          <div class="inp-wrap"><input type="number" id="cPly" value="22" min="0" step="0.5" oninput="recalc()"><span class="sym">$</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-head">Labor & Markup</div>
+      <div class="cost-grid">
+        <div class="cost-item">
+          <label>$/hr per staff</label>
+          <div class="inp-wrap"><input type="number" id="cLabor" value="30" min="0" oninput="recalc()"><span class="sym">$</span></div>
+        </div>
+        <div class="cost-item">
+          <label>Staff count</label>
+          <input type="number" id="iStaff" value="2" min="1" max="20" oninput="recalc()">
+        </div>
+        <div class="cost-item" style="grid-column:span 2">
+          <label>Markup %</label>
+          <div class="inp-wrap"><input type="number" id="iMarkup" value="50" min="0" max="500" oninput="recalc()"><span class="sym">%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-head">Summary</div>
+      <div class="results-grid">
+        <div class="res-card">
+          <div class="rl">2×4 Boards</div>
+          <div class="rv" id="rBoards">—</div>
+        </div>
+        <div class="res-card">
+          <div class="rl">Ply Sheets</div>
+          <div class="rv" id="rSheets">—</div>
+        </div>
+        <div class="res-card">
+          <div class="rl">Labor Hours</div>
+          <div class="rv" id="rHrs">—<small> hr</small></div>
+        </div>
+        <div class="res-card">
+          <div class="rl">Volume</div>
+          <div class="rv" id="rVol">—<small> ft³</small></div>
+        </div>
+        <div class="res-card">
+          <div class="rl">Materials</div>
+          <div class="rv" id="rMat">—</div>
+        </div>
+        <div class="res-card">
+          <div class="rl">Total Cost</div>
+          <div class="rv" id="rTotal">—</div>
+        </div>
+        <div class="res-card sale">
+          <div class="rl">Sale Price (incl. markup)</div>
+          <div class="rv" id="rSale">—</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /sidebar -->
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('assembly',this)">Assembly Diagram</button>
+      <button class="tab-btn" onclick="switchTab('lumber',this)">Lumber Cut List</button>
+      <button class="tab-btn" onclick="switchTab('plywood',this)">Plywood Layout</button>
+      <button class="tab-btn" onclick="switchTab('materials',this)">Cost Breakdown</button>
+    </div>
+
+    <div class="tab-panels">
+
+      <!-- ASSEMBLY -->
+      <div class="tab-panel active" id="tab-assembly">
+        <div class="canvas-wrap">
+          <div class="canvas-title">ISOMETRIC ASSEMBLY VIEW</div>
+          <canvas id="assembly-canvas" width="700" height="420"></canvas>
+          <div class="legend" id="assembly-legend"></div>
+        </div>
+      </div>
+
+      <!-- LUMBER -->
+      <div class="tab-panel" id="tab-lumber">
+        <div id="lumber-list"></div>
+      </div>
+
+      <!-- PLYWOOD -->
+      <div class="tab-panel" id="tab-plywood">
+        <div id="ply-list"></div>
+      </div>
+
+      <!-- MATERIALS -->
+      <div class="tab-panel" id="tab-materials">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+          <table class="mat-table" id="mat-table"></table>
+        </div>
+      </div>
+
+    </div><!-- /tab-panels -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// CALC ENGINE
+// ═══════════════════════════════════════════════════════════════
+
+function packBoards(pieces) {
+  const boards = [];
+  const sorted = [...pieces].sort((a,b) => b-a);
+  for (const p of sorted) {
+    let placed = false;
+    for (const b of boards) {
+      if (b.used + p <= 8.0001) { b.pieces.push(p); b.used += p; placed = true; break; }
+    }
+    if (!placed) boards.push({pieces:[p], used:p});
+  }
+  return boards;
+}
+
+function calcSheets(Lf, Wf, Hf) {
+  // Returns array of sheet objects describing what panels are on each sheet
+  // Panels: 2x(LxW), 2x(LxH), 2x(WxH)
+  const allPanels = [
+    {w:Lf, h:Wf, label:'Base',      color:'#c4864a'},
+    {w:Lf, h:Wf, label:'Top',       color:'#c4864a'},
+    {w:Lf, h:Hf, label:'Front',     color:'#4a8ec4'},
+    {w:Lf, h:Hf, label:'Back',      color:'#4a8ec4'},
+    {w:Wf, h:Hf, label:'Left Side', color:'#4ac47a'},
+    {w:Wf, h:Hf, label:'Right Side','color':'#4ac47a'},
+  ];
+
+  // Normalize each panel: ensure smaller dim <= 4 if possible (orient to fit on sheet)
+  const normalized = allPanels.map(p => {
+    let w = p.w, h = p.h;
+    // Try to orient so w<=4 and h<=8
+    if (w > 4 && h <= 4) [w,h] = [h,w];
+    if (h > 8 && w <= 8) [w,h] = [h,w];
+    return {...p, fw:w, fh:h};
+  });
+
+  // Sort by area desc for better packing
+  const todo = [...normalized].sort((a,b) => b.fw*b.fh - a.fw*a.fh);
+  const sheets = [];
+
+  for (const panel of todo) {
+    const {fw, fh} = panel;
+    const fitsOnSheet = (fw <= 4 && fh <= 8) || (fh <= 4 && fw <= 8);
+
+    if (!fitsOnSheet) {
+      // Panel too wide for single sheet — needs 2 sheets joined at seam
+      // Each half is 4 x fh (or 4 x fw if rotated)
+      const halfH = (fw <= 8) ? fh : fw;
+      sheets.push({panels:[{...panel, isHalf:'A'}], colUsed:[halfH, 0], joined:true, joinedPanel: panel});
+      sheets.push({panels:[{...panel, isHalf:'B'}], colUsed:[halfH, 0], joined:true, joinedPanel: panel});
+      continue;
+    }
+
+    // Orient to fit: w<=4
+    let pw = fw, ph = fh;
+    if (pw > 4 && ph <= 4) [pw,ph] = [ph,pw];
+    if (pw > 4) [pw,ph] = [ph,pw]; // last resort
+
+    let placed = false;
+    for (const s of sheets) {
+      if (s.joined) continue;
+      // Try left col (full 4ft wide)
+      if (pw <= 4 && s.colUsed[0] + ph <= 8.0001) {
+        s.colUsed[0] += ph;
+        s.panels.push({...panel, pw, ph, colIdx:0, yOff: s.colUsed[0]-ph});
+        placed = true; break;
+      }
+      // Try right col if panel is narrow enough to share 4ft width
+      if (pw <= 2 && s.colUsed[1] + ph <= 8.0001) {
+        s.colUsed[1] += ph;
+        s.panels.push({...panel, pw, ph, colIdx:1, yOff: s.colUsed[1]-ph});
+        placed = true; break;
+      }
+    }
+    if (!placed) {
+      const ns = {panels:[], colUsed:[0,0], joined:false};
+      ns.colUsed[0] = ph;
+      ns.panels.push({...panel, pw, ph, colIdx:0, yOff:0});
+      sheets.push(ns);
+    }
+  }
+  return sheets;
+}
+
+function calcLumber(Lf, Wf, Hf) {
+  const pieces = [];
+  // 6 panel perimeters
+  for (let i=0;i<2;i++) pieces.push({len:Lf,role:'Base/Top L'},{len:Lf,role:'Base/Top L'},{len:Wf,role:'Base/Top W'},{len:Wf,role:'Base/Top W'});
+  for (let i=0;i<2;i++) pieces.push({len:Lf,role:'Long Side L'},{len:Lf,role:'Long Side L'},{len:Hf,role:'Long Side H'},{len:Hf,role:'Long Side H'});
+  for (let i=0;i<2;i++) pieces.push({len:Wf,role:'Short Side W'},{len:Wf,role:'Short Side W'},{len:Hf,role:'Short Side H'},{len:Hf,role:'Short Side H'});
+  // seam bracing
+  const seams = Math.max(0, Math.ceil(Hf/4) - 1);
+  for (let s=0;s<seams;s++) {
+    pieces.push({len:Lf,role:'Seam Brace L'},{len:Lf,role:'Seam Brace L'},{len:Wf,role:'Seam Brace W'},{len:Wf,role:'Seam Brace W'});
+  }
+  // pack into boards
+  const boards = packBoards(pieces.map(p=>p.len));
+  return {boards, pieces, seams};
+}
+
+function fullCalc() {
+  const Lin = parseFloat(document.getElementById('iL').value)||0;
+  const Win = parseFloat(document.getElementById('iW').value)||0;
+  const Hin = parseFloat(document.getElementById('iH').value)||0;
+  const cL  = parseFloat(document.getElementById('cLumber').value)||0;
+  const cP  = parseFloat(document.getElementById('cPly').value)||0;
+  const cLab= parseFloat(document.getElementById('cLabor').value)||0;
+  const staff= parseInt(document.getElementById('iStaff').value)||1;
+  const mkp = parseFloat(document.getElementById('iMarkup').value)||0;
+
+  const Lf = Lin/12, Wf = Win/12, Hf = Hin/12;
+
+  const sheets = calcSheets(Lf, Wf, Hf);
+  const totalSheets = sheets.length; // each sheet obj = 1 sheet to buy
+
+  const {boards, pieces, seams} = calcLumber(Lf, Wf, Hf);
+  const totalBoards = boards.length;
+
+  const vol = +(Lf*Wf*Hf).toFixed(2);
+  const matCost = totalBoards*cL + totalSheets*cP;
+  const hrs = +(1 + 0.5*totalSheets + 0.25*totalBoards + 1).toFixed(1);
+  const labCost = +(hrs*cLab*staff).toFixed(2);
+  const total = +(matCost+labCost).toFixed(2);
+  const markup = +(total*mkp/100).toFixed(2);
+  const sale = +(total+markup).toFixed(2);
+
+  return {Lin, Win, Hin, Lf, Wf, Hf, sheets, totalSheets, boards, pieces, seams,
+          totalBoards, vol, matCost, hrs, labCost, total, markup, sale, cL, cP};
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════
+
+function fmt$(n){ return '$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtIn(n){ return n % 12 === 0 ? (n/12)+'ft' : n+'"'; }
+
+let lastData = null;
+
+function recalc() {
+  const data = fullCalc();
+  lastData = data;
+
+  // validate
+  const wb = document.getElementById('warn-box');
+  const warns = [];
+  if (data.Lin > 96) warns.push('Length exceeds 96" max');
+  if (data.Win > 96) warns.push('Width exceeds 96" max');
+  if (data.Hin > 96) warns.push('Height exceeds 96" max');
+  if (warns.length) { wb.textContent = '⚠ '+warns.join(' · '); wb.style.display='block'; }
+  else wb.style.display='none';
+
+  // header
+  document.getElementById('header-dims').innerHTML =
+    `<span>${data.Lin}"</span> × <span>${data.Win}"</span> × <span>${data.Hin}"</span>&nbsp;&nbsp;in`;
+
+  // sidebar results
+  document.getElementById('rBoards').innerHTML = data.totalBoards;
+  document.getElementById('rSheets').innerHTML = data.totalSheets;
+  document.getElementById('rHrs').innerHTML = data.hrs+'<small> hr</small>';
+  document.getElementById('rVol').innerHTML = data.vol+'<small> ft³</small>';
+  document.getElementById('rMat').innerHTML = fmt$(data.matCost);
+  document.getElementById('rTotal').innerHTML = fmt$(data.total);
+  document.getElementById('rSale').innerHTML = fmt$(data.sale);
+
+  renderAssembly(data);
+  renderLumber(data);
+  renderPlywood(data);
+  renderMaterials(data);
+}
+
+// ── ASSEMBLY DIAGRAM ──────────────────────────────────────────
+function renderAssembly(data) {
+  const canvas = document.getElementById('assembly-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  const L = data.Lf, Wd = data.Wf, Ht = data.Hf;
+  const maxDim = Math.max(L,Wd,Ht,1);
+  const scale = Math.min(160/maxDim, 60);
+
+  // isometric projection
+  const isoX = (x,y,z) => ({ 
+    x: W/2 + (x-y)*Math.cos(Math.PI/6)*scale,
+    y: H/2 + (x+y)*Math.sin(Math.PI/6)*scale - z*scale + 20
+  });
+
+  const lw = 0.02; // 2x4 thickness in feet (approx)
+
+  // Panel colors with transparency
+  const colors = {
+    base:  {fill:'#8B5E3C', stroke:'#5a3a1a'},
+    top:   {fill:'#7a5030', stroke:'#4a2a0a'},
+    front: {fill:'#3a6a8a', stroke:'#1a3a5a'},
+    back:  {fill:'#2a5a7a', stroke:'#0a2a4a'},
+    left:  {fill:'#2a7a4a', stroke:'#0a4a2a'},
+    right: {fill:'#1a6a3a', stroke:'#0a3a1a'},
+  };
+  const frameColor = '#c4864a';
+  const frameStroke = '#7a4a1a';
+
+  function drawFace(pts, fill, stroke, alpha=0.85) {
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.closePath();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = fill;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  function draw2x4(p1, p2, p3, p4, alpha=1) {
+    const pts = [isoX(...p1), isoX(...p2), isoX(...p3), isoX(...p4)];
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    pts.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.closePath();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = frameColor;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = frameStroke;
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+  }
+
+  const t = lw; // 2x4 offset
+  // Draw in painter's order: back, bottom, then front faces
+
+  // BOTTOM face
+  drawFace([isoX(0,0,0),isoX(L,0,0),isoX(L,Wd,0),isoX(0,Wd,0)], colors.base.fill, colors.base.stroke);
+
+  // BACK face (y=Wd)
+  drawFace([isoX(0,Wd,0),isoX(L,Wd,0),isoX(L,Wd,Ht),isoX(0,Wd,Ht)], colors.back.fill, colors.back.stroke, 0.75);
+
+  // LEFT face (x=0)
+  drawFace([isoX(0,0,0),isoX(0,Wd,0),isoX(0,Wd,Ht),isoX(0,0,Ht)], colors.left.fill, colors.left.stroke, 0.75);
+
+  // RIGHT face (x=L)
+  drawFace([isoX(L,0,0),isoX(L,Wd,0),isoX(L,Wd,Ht),isoX(L,0,Ht)], colors.right.fill, colors.right.stroke, 0.75);
+
+  // FRONT face (y=0)
+  drawFace([isoX(0,0,0),isoX(L,0,0),isoX(L,0,Ht),isoX(0,0,Ht)], colors.front.fill, colors.front.stroke, 0.85);
+
+  // TOP face
+  drawFace([isoX(0,0,Ht),isoX(L,0,Ht),isoX(L,Wd,Ht),isoX(0,Wd,Ht)], colors.top.fill, colors.top.stroke, 0.9);
+
+  // Draw 2x4 frame edges (12 edges + seam braces)
+  ctx.globalAlpha = 0.92;
+
+  // Bottom edges
+  const bottomEdges = [
+    [[0,0,0],[L,0,0],[L,t,0],[0,t,0]],
+    [[0,Wd-t,0],[L,Wd-t,0],[L,Wd,0],[0,Wd,0]],
+    [[0,0,0],[t,0,0],[t,Wd,0],[0,Wd,0]],
+    [[L-t,0,0],[L,0,0],[L,Wd,0],[L-t,Wd,0]],
+  ];
+  bottomEdges.forEach(e => draw2x4(...e));
+
+  // Vertical corner posts
+  const vertPosts = [
+    [[0,0,0],[t,0,0],[t,0,Ht],[0,0,Ht]],
+    [[L-t,0,0],[L,0,0],[L,0,Ht],[L-t,0,Ht]],
+    [[0,Wd-t,0],[t,Wd-t,0],[t,Wd,0],[0,Wd,0]], // drawn differently
+    [[L-t,Wd-t,0],[L,Wd-t,0],[L,Wd,0],[L-t,Wd,0]],
+  ];
+  // Simplified: draw corner posts as lines
+  const corners = [[0,0],[L,0],[L,Wd],[0,Wd]];
+  corners.forEach(([cx,cy]) => {
+    const b = isoX(cx,cy,0), top = isoX(cx,cy,Ht);
+    ctx.beginPath();
+    ctx.moveTo(b.x,b.y); ctx.lineTo(top.x,top.y);
+    ctx.strokeStyle = frameColor; ctx.lineWidth = 3;
+    ctx.globalAlpha = 0.9;
+    ctx.stroke();
+  });
+
+  // Top edges
+  const topEdges = [
+    [[0,0,Ht],[L,0,Ht],[L,t,Ht],[0,t,Ht]],
+    [[0,Wd-t,Ht],[L,Wd-t,Ht],[L,Wd,Ht],[0,Wd,Ht]],
+    [[0,0,Ht],[t,0,Ht],[t,Wd,Ht],[0,Wd,Ht]],
+    [[L-t,0,Ht],[L,0,Ht],[L,Wd,Ht],[L-t,Wd,Ht]],
+  ];
+  topEdges.forEach(e => draw2x4(...e));
+
+  // Seam braces (dashed lines at 4ft intervals)
+  for (let s=1; s <= data.seams; s++) {
+    const sz = s*4;
+    if (sz >= Ht) continue;
+    ctx.setLineDash([4,4]);
+    ctx.strokeStyle = '#4a8aba';
+    ctx.lineWidth = 2;
+    ctx.globalAlpha = 0.8;
+    const seamPts = [isoX(0,0,sz), isoX(L,0,sz), isoX(L,Wd,sz), isoX(0,Wd,sz)];
+    ctx.beginPath();
+    seamPts.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+    ctx.closePath();
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  ctx.globalAlpha = 1;
+
+  // Dimension labels
+  ctx.font = '500 11px Barlow, sans-serif';
+  ctx.fillStyle = '#a09880';
+  const labelPad = 14;
+  const bL = isoX(L/2, 0, 0);
+  ctx.fillText(`L: ${data.Lin}"`, bL.x - 15, bL.y + labelPad);
+  const bW = isoX(L, Wd/2, 0);
+  ctx.fillText(`W: ${data.Win}"`, bW.x + 6, bW.y + 4);
+  const bH = isoX(0, 0, Ht/2);
+  ctx.fillText(`H: ${data.Hin}"`, bH.x - 52, bH.y);
+
+  // Legend
+  const legendEl = document.getElementById('assembly-legend');
+  const legendItems = [
+    {color: colors.base.fill, label:'Base / Top', detail: `${data.Lin}" × ${data.Win}" × 2 panels`},
+    {color: colors.front.fill, label:'Front / Back', detail: `${data.Lin}" × ${data.Hin}" × 2 panels`},
+    {color: colors.left.fill, label:'Left / Right', detail: `${data.Win}" × ${data.Hin}" × 2 panels`},
+    {color: frameColor, label:'2×4 Frame', detail: `${data.totalBoards} boards needed`},
+    {color: '#4a8aba', label:'Seam Bracing', detail: data.seams > 0 ? `${data.seams} ring(s) at every 4ft` : 'None required'},
+  ];
+  legendEl.innerHTML = legendItems.map(i =>
+    `<div class="legend-item">
+      <div class="legend-swatch" style="background:${i.color}"></div>
+      <div class="legend-text"><strong>${i.label}</strong>${i.detail}</div>
+    </div>`
+  ).join('');
+}
+
+// ── LUMBER CUT LIST ───────────────────────────────────────────
+const SEG_COLORS = {
+  'Base/Top L':    '#8a5c28',
+  'Base/Top W':    '#9a6c38',
+  'Long Side L':   '#284a7a',
+  'Long Side H':   '#3a5a8a',
+  'Short Side W':  '#286a48',
+  'Short Side H':  '#38784a',
+  'Seam Brace L':  '#4a3a8a',
+  'Seam Brace W':  '#5a4a9a',
+};
+
+function renderLumber(data) {
+  const el = document.getElementById('lumber-list');
+
+  // build piece role map from lengths
+  const {pieces, boards} = data;
+  // match pieces to board slots by length (greedy same order)
+  // We'll just color by length bucket
+  const allLens = [...new Set(pieces.map(p=>p.len))].sort((a,b)=>b-a);
+  const lenColors = {};
+  const palette = ['#7a4820','#284878','#286840','#4a3878','#78401a','#183860','#186030','#381868'];
+  allLens.forEach((l,i) => lenColors[l] = palette[i%palette.length]);
+
+  // group pieces by role for summary
+  const roleCount = {};
+  for (const p of pieces) {
+    roleCount[p.role] = (roleCount[p.role]||0)+1;
+  }
+
+  let html = '';
+
+  // Piece summary
+  html += `<div class="cut-section">
+    <div class="cut-sec-head">Piece Summary</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:20px">`;
+  for (const [role, cnt] of Object.entries(roleCount)) {
+    const len = pieces.find(p=>p.role===role).len;
+    const isSeam = role.includes('Seam');
+    html += `<div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 14px;display:flex;align-items:center;gap:10px">
+      <div style="width:10px;height:10px;border-radius:2px;background:${lenColors[len]};flex-shrink:0"></div>
+      <div>
+        <div style="font-size:12px;color:var(--text);font-weight:600">${cnt}× &nbsp;<span style="font-family:JetBrains Mono,monospace">${+(len*12).toFixed(1)}"</span> pieces</div>
+        <div style="font-size:10px;color:var(--text-dim);margin-top:2px">${role} ${isSeam?'<span style="color:#8080c0;font-size:9px">SEAM</span>':''}</div>
+      </div>
+    </div>`;
+  }
+  html += '</div></div>';
+
+  // Board visuals
+  html += `<div class="cut-section"><div class="cut-sec-head">Board Cut Layout &nbsp;<span style="font-size:10px;color:var(--text-dim);letter-spacing:1px">${data.totalBoards} × 8ft BOARDS</span></div>`;
+
+  // Re-pack with role info
+  const roleBoards = [];
+  const piecesWithRole = [...data.pieces].sort((a,b)=>b.len-a.len);
+  const roleArr = piecesWithRole.map(p=>({len:p.len, role:p.role}));
+  const rBoards = [];
+  for (const p of roleArr) {
+    let placed = false;
+    for (const b of rBoards) {
+      if (b.used + p.len <= 8.0001) { b.items.push(p); b.used += p.len; placed=true; break; }
+    }
+    if (!placed) rBoards.push({items:[p], used:p.len});
+  }
+
+  rBoards.forEach((board, i) => {
+    const waste = +(8 - board.used).toFixed(3);
+    html += `<div class="board-row">
+      <div class="board-meta">
+        <div class="bnum">Board ${i+1}</div>
+        <div class="bwaste">${waste > 0.01 ? waste*12+'" waste' : 'Zero waste'}</div>
+      </div>
+      <div class="board-bar">`;
+    board.items.forEach(item => {
+      const pct = (item.len/8)*100;
+      const inLabel = +(item.len*12).toFixed(1)+'"';
+      html += `<div class="seg" style="width:${pct}%;background:${lenColors[item.len]}" title="${item.role}: ${inLabel}">
+        <span class="seg-label">${pct > 8 ? inLabel : ''}</span>
+      </div>`;
+    });
+    if (waste > 0.01) {
+      html += `<div class="seg-waste"><span>${+(waste*12).toFixed(1)}" waste</span></div>`;
+    }
+    html += `</div></div>`;
+  });
+
+  if (data.seams > 0) {
+    html += `<div style="margin-top:10px;padding:10px 14px;background:#0e0e1a;border:1px solid #2a2a4a;border-radius:6px;font-size:11px;color:#8080c0">
+      ⬡ ${data.seams} seam brace ring${data.seams>1?'s':''} required — one horizontal ring of 2×4s at every 4ft height interval
+    </div>`;
+  }
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// ── PLYWOOD LAYOUT ────────────────────────────────────────────
+function renderPlywood(data) {
+  const el = document.getElementById('ply-list');
+  const {sheets} = data;
+
+  // Panel colors
+  const panelColors = {
+    'Base':       '#8B5E3C',
+    'Top':        '#9B6E4C',
+    'Front':      '#2a5a8a',
+    'Back':       '#3a6a9a',
+    'Left Side':  '#2a7a4a',
+    'Right Side': '#3a8a5a',
+  };
+
+  let html = `<div class="cut-sec-head" style="font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:3px;color:var(--accent);display:flex;align-items:center;gap:8px;margin-bottom:16px">
+    Plywood Sheet Layout &nbsp;<span style="font-size:10px;color:var(--text-dim);letter-spacing:1px">${data.totalSheets} × 4×8ft SHEETS</span>
+    <div style="flex:1;height:1px;background:var(--border)"></div>
+  </div>`;
+
+  html += '<div class="ply-grid">';
+
+  const SHEET_DISP_W = 160; // px display width for 4ft
+  const SHEET_DISP_H = 320; // px display height for 8ft
+  const scale = SHEET_DISP_W / 4; // px per foot
+
+  sheets.forEach((sheet, si) => {
+    const isJoined = sheet.joined;
+    const title = isJoined
+      ? `Sheet ${si+1} <span style="color:#4a6a9a;font-size:9px">JOINED PANEL</span>`
+      : `Sheet ${si+1}`;
+
+    html += `<div class="ply-card">
+      <div class="ply-card-head">${title}</div>
+      <div style="position:relative;width:${SHEET_DISP_W}px;height:${SHEET_DISP_H}px;background:#1a140a;border:2px solid var(--wood);border-radius:3px;overflow:hidden">`;
+
+    // Wood grain lines
+    for (let i=0;i<8;i++) {
+      const yp = (i/8)*100;
+      html += `<div style="position:absolute;left:0;right:0;top:${yp}%;height:1px;background:rgba(100,70,30,0.2)"></div>`;
+    }
+
+    if (isJoined) {
+      // Show joined panel half
+      const panel = sheet.joinedPanel;
+      let pw = panel.fw, ph = panel.fh;
+      if (pw > 4) [pw,ph] = [ph,pw];
+      const dispW = Math.min(pw,4)*scale;
+      const dispH = Math.min(ph,8)*scale;
+      const color = panelColors[panel.label] || '#666';
+      const inW = +(pw*12).toFixed(1), inH = +(ph*12).toFixed(1);
+      const isA = sheet.panels[0].isHalf === 'A';
+      html += `<div style="position:absolute;left:0;top:0;width:${dispW}px;height:${dispH}px;background:${color};opacity:0.85;display:flex;align-items:center;justify-content:center;flex-direction:column">
+        <div style="font-size:9px;font-weight:700;color:rgba(0,0,0,0.7);text-align:center">${panel.label}<br>${inW}"×${inH}"</div>
+        <div style="font-size:8px;color:rgba(0,0,0,0.5)">Half ${isA?'A':'B'}</div>
+      </div>`;
+    } else {
+      // Show panels placed on sheet
+      sheet.panels.forEach(p => {
+        const {pw, ph, colIdx, yOff, label} = p;
+        if (pw===undefined) return;
+        const xPx = (colIdx||0)*4*scale;
+        const yPx = (yOff||0)*scale;
+        const wPx = pw*scale;
+        const hPx = ph*scale;
+        const color = panelColors[label] || '#666';
+        const inW = +(pw*12).toFixed(1), inH = +(ph*12).toFixed(1);
+        html += `<div style="position:absolute;left:${xPx}px;top:${yPx}px;width:${wPx}px;height:${hPx}px;background:${color};opacity:0.85;border:1px solid rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;flex-direction:column">
+          <div style="font-size:9px;font-weight:700;color:rgba(0,0,0,0.7);text-align:center;padding:2px">${label}<br>${inW}"×${inH}"</div>
+        </div>`;
+      });
+    }
+
+    // Waste overlay
+    html += `</div>
+      <div style="margin-top:6px;font-size:10px;color:var(--text-dim)">
+        ${sheet.panels.map(p=>p.label||'').filter(Boolean).join(', ')}
+      </div>
+    </div>`;
+  });
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// ── MATERIALS TABLE ───────────────────────────────────────────
+function renderMaterials(data) {
+  const el = document.getElementById('mat-table');
+  const rows = [
+    ['<span class="chip chip-w">Lumber</span>', `${data.totalBoards}`, '8ft 2×4 boards', fmt$(data.cL), fmt$(data.totalBoards*data.cL)],
+    ['<span class="chip chip-p">Plywood</span>', `${data.totalSheets}`, '4×8 sheets', fmt$(data.cP), fmt$(data.totalSheets*data.cP)],
+    ['<span class="chip chip-l">Labor</span>', `${data.hrs}`, `hours (${document.getElementById('iStaff').value} staff @ ${fmt$(parseFloat(document.getElementById('cLabor').value)||0)}/hr)`, '—', fmt$(data.labCost)],
+    data.seams > 0 ? ['<span class="chip chip-s">Seams</span>', `${data.seams}`, 'brace ring(s) included in lumber count', '—', '—'] : null,
+  ].filter(Boolean);
+
+  let html = `<thead><tr>
+    <th>Type</th><th>Qty</th><th>Description</th><th>Unit Cost</th><th>Subtotal</th>
+  </tr></thead><tbody>`;
+  rows.forEach(r => {
+    html += `<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`;
+  });
+  html += `<tr class="total-row"><td colspan="4">Materials + Labor</td><td>${fmt$(data.total)}</td></tr>`;
+  html += `<tr class="total-row" style="opacity:0.7"><td colspan="4">Markup (${document.getElementById('iMarkup').value}%)</td><td>${fmt$(data.markup)}</td></tr>`;
+  html += `<tr class="sale-row"><td colspan="4">Sale Price</td><td>${fmt$(data.sale)}</td></tr>`;
+  html += '</tbody>';
+  el.innerHTML = html;
+}
+
+// ── TAB SWITCH ────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+recalc();
+</script>
+</body>
+</html>
